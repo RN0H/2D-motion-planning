@@ -4,16 +4,20 @@
 #include <algorithm>
 #include <cmath>
 
+// Constructor: initialize with grid
 AStarPlanner::AStarPlanner(const Grid& grid) : Planner(grid) {}
 
+// Helper function: Manhattan distance heuristic
 namespace {
     int manhattan(const Grid::Point& a, const Grid::Point& b) {
         return std::abs(a.first - b.first) + std::abs(a.second - b.second);
     }
 }
 
+// Plan a path using A* search
 bool AStarPlanner::plan() {
     using Point = Grid::Point;
+    // Node struct for priority queue
     struct Node {
         Point pt;
         int cost, priority;
@@ -22,6 +26,7 @@ bool AStarPlanner::plan() {
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> open;
     std::unordered_map<int, Point> came_from;
     std::unordered_map<int, int> cost_so_far;
+    // Hash function for grid points
     auto hash = [w=grid.getWidth()](const Point& p) { return p.second * w + p.first; };
     Point start = grid.getStart(), goal = grid.getGoal();
     open.push({start, 0, manhattan(start, goal)});
@@ -44,7 +49,7 @@ bool AStarPlanner::plan() {
             }
         }
     }
-    // Reconstruct path
+    // Reconstruct path from goal to start
     path.clear();
     Point curr = goal;
     if (!came_from.count(hash(goal))) return false;
@@ -57,6 +62,7 @@ bool AStarPlanner::plan() {
     return true;
 }
 
+// Return the planned path
 std::vector<Grid::Point> AStarPlanner::getPath() const {
     return path;
 } 

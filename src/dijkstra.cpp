@@ -3,10 +3,13 @@
 #include <unordered_map>
 #include <algorithm>
 
+// Constructor: initialize with grid
 DijkstraPlanner::DijkstraPlanner(const Grid& grid) : Planner(grid) {}
 
+// Plan a path using Dijkstra's algorithm
 bool DijkstraPlanner::plan() {
     using Point = Grid::Point;
+    // Node struct for priority queue
     struct Node {
         Point pt;
         int cost;
@@ -15,6 +18,7 @@ bool DijkstraPlanner::plan() {
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> open;
     std::unordered_map<int, Point> came_from;
     std::unordered_map<int, int> cost_so_far;
+    // Hash function for grid points
     auto hash = [w=grid.getWidth()](const Point& p) { return p.second * w + p.first; };
     Point start = grid.getStart(), goal = grid.getGoal();
     open.push({start, 0});
@@ -36,7 +40,7 @@ bool DijkstraPlanner::plan() {
             }
         }
     }
-    // Reconstruct path
+    // Reconstruct path from goal to start
     path.clear();
     Point curr = goal;
     if (!came_from.count(hash(goal))) return false;
@@ -49,6 +53,7 @@ bool DijkstraPlanner::plan() {
     return true;
 }
 
+// Return the planned path
 std::vector<Grid::Point> DijkstraPlanner::getPath() const {
     return path;
 } 

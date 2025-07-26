@@ -2,16 +2,19 @@
 #include <SDL.h>
 #include <iostream>
 
+// Visualize the grid and animate the agent moving along the path
 void visualizeGrid(const Grid& grid, const std::vector<Grid::Point>& path) {
     int cellSize = 40;
     int width = grid.getWidth();
     int height = grid.getHeight();
     
+    // Initialize SDL2
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         return;
     }
     
+    // Create SDL2 window
     SDL_Window* window = SDL_CreateWindow("Motion Planning Visualization", 
                                         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                         width * cellSize, height * cellSize, 
@@ -22,6 +25,7 @@ void visualizeGrid(const Grid& grid, const std::vector<Grid::Point>& path) {
         return;
     }
     
+    // Create SDL2 renderer
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
         std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
@@ -35,17 +39,18 @@ void visualizeGrid(const Grid& grid, const std::vector<Grid::Point>& path) {
     int currentStep = 0;
     
     while (!quit) {
+        // Handle window close event
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
         }
         
-        // Clear screen
+        // Clear screen to white
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
         
-        // Draw grid
+        // Draw grid cells
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 SDL_Rect rect = {x * cellSize + 1, y * cellSize + 1, cellSize - 2, cellSize - 2};
@@ -55,19 +60,16 @@ void visualizeGrid(const Grid& grid, const std::vector<Grid::Point>& path) {
                 } else {
                     SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255); // Light gray for free space
                 }
-                
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
         
-        // Draw start and goal
+        // Draw start and goal cells
         Grid::Point start = grid.getStart();
         Grid::Point goal = grid.getGoal();
-        
         SDL_Rect startRect = {start.first * cellSize + 1, start.second * cellSize + 1, cellSize - 2, cellSize - 2};
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for start
         SDL_RenderFillRect(renderer, &startRect);
-        
         SDL_Rect goalRect = {goal.first * cellSize + 1, goal.second * cellSize + 1, cellSize - 2, cellSize - 2};
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red for goal
         SDL_RenderFillRect(renderer, &goalRect);
@@ -106,6 +108,7 @@ void visualizeGrid(const Grid& grid, const std::vector<Grid::Point>& path) {
         }
     }
     
+    // Clean up SDL2 resources
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
