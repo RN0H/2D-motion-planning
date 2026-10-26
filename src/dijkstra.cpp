@@ -28,7 +28,7 @@ bool DijkstraPlanner::plan() {
     while (!open.empty()) {
         Node curr = open.top(); open.pop();
         if (curr.pt == goal) break;
-        if (curr.cost > cost_so_far[hash(curr.pt)]) continue;  
+        if (curr.cost > cost_so_far[hash(curr.pt)]) continue;
         for (int d = 0; d < 4; ++d) {
             int nx = curr.pt.first + dx[d], ny = curr.pt.second + dy[d];
             if (!grid.inBounds(nx, ny) || grid.isObstacle(nx, ny)) continue;

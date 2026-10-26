@@ -1,4 +1,5 @@
 #include "grid.hpp"
+#include <random>
 
 // Constructor: initialize grid with given width and height
 Grid::Grid(int width, int height)
@@ -17,6 +18,27 @@ void Grid::setStart(int x, int y) {
 // Set the goal position
 void Grid::setGoal(int x, int y) {
     if (inBounds(x, y)) goal = {x, y};
+}
+
+// Fill the grid with random obstacles and pick a random free goal
+void Grid::randomize(double density, unsigned seed) {
+    std::mt19937 rng(seed);
+    std::bernoulli_distribution blocked(density);
+    std::uniform_int_distribution<int> randX(0, width - 1), randY(0, height - 1);
+
+    // Randomly place obstacles, keeping the start cell free
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            obstacles[y][x] = blocked(rng);
+        }
+    }
+    obstacles[start.second][start.first] = false;
+
+    // Pick a random goal that differs from the start, then make sure it is free
+    do {
+        goal = {randX(rng), randY(rng)};
+    } while (goal == start);
+    obstacles[goal.second][goal.first] = false;
 }
 
 // Check if a cell is an obstacle

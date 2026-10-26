@@ -16,6 +16,10 @@ public:
     void setStart(int x, int y);
     // Set the goal position
     void setGoal(int x, int y);
+    // Fill the grid with random obstacles (each cell blocked with probability
+    // `density`) and place the goal on a random free cell. The start cell is
+    // always kept free.
+    void randomize(double density, unsigned seed);
     // Check if a cell is an obstacle
     bool isObstacle(int x, int y) const;
     // Check if a cell is within grid bounds

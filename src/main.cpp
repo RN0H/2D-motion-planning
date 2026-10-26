@@ -4,6 +4,8 @@
 #include "visualize.hpp"
 #include <iostream>
 #include <vector>
+#include <random>
+#include <string>
 
 // Print the grid and the path in ASCII format
 void printGrid(const Grid& grid, const std::vector<Grid::Point>& path) {
@@ -36,18 +38,18 @@ void printGrid(const Grid& grid, const std::vector<Grid::Point>& path) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     // Define grid size
-    int width = 10, height = 8;
+    int width = 30, height = 30;
     Grid grid(width, height);
 
-    // Set obstacles in the grid
-    for (int x = 3; x < 7; ++x) grid.setObstacle(x, 4); // Horizontal wall
-    for (int y = 1; y < 5; ++y) grid.setObstacle(6, y); // Vertical wall
+    // Use the seed from the command line if given, otherwise a random one
+    unsigned seed = (argc > 1) ? std::stoul(argv[1]) : std::random_device{}();
+    std::cout << "Seed: " << seed << " (pass it as an argument to reproduce this map)\n";
 
-    // Set start and goal positions
+    // Set start position, then randomize obstacles and goal
     grid.setStart(1, 1);
-    grid.setGoal(8, 6);
+    grid.randomize(0.25, seed);
 
     // Run A* planner
     std::cout << "A* Planner Result:\n";
